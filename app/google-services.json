@@ -1,0 +1,48 @@
+{
+  "project_info": {
+    "project_number": "320797249454",
+    "project_id": "trading-1d0d5",
+    "storage_bucket": "trading-1d0d5.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:320797249454:android:3179e01dfcd89b1510023f",
+        "android_client_info": {
+          "package_name": "com.abmtech.fxadmin"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyA-5iDkJd1jag8bJEQlyuhyWcnkF9mbAkA"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:320797249454:android:27162ad71346f7ea10023f",
+        "android_client_info": {
+          "package_name": "com.abmtech.trading"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyA-5iDkJd1jag8bJEQlyuhyWcnkF9mbAkA"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
