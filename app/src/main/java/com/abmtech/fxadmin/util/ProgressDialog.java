@@ -9,7 +9,7 @@ import android.view.Window;
 
 import androidx.annotation.NonNull;
 
-import com.abmtech.trading.R;
+import com.abmtech.fxadmin.R;
 
 
 public class ProgressDialog extends Dialog {

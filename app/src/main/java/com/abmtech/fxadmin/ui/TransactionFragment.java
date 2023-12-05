@@ -2,8 +2,13 @@ package com.abmtech.fxadmin.ui;
 
 import static android.content.ContentValues.TAG;
 
+import android.graphics.Bitmap;
+import android.graphics.drawable.BitmapDrawable;
 import android.os.Bundle;
 
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.PickVisualMediaRequest;
+import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentTransaction;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -18,6 +23,7 @@ import com.abmtech.fxadmin.R;
 import com.abmtech.fxadmin.adapter.TransactionAdapter;
 import com.abmtech.fxadmin.databinding.FragmentTransactionBinding;
 import com.abmtech.fxadmin.model.TransactionModel;
+import com.abmtech.fxadmin.util.ProgressDialog;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.FirebaseFirestore;
 
@@ -27,18 +33,21 @@ import java.util.List;
 public class TransactionFragment extends Fragment {
     private FragmentTransactionBinding binding;
     private FirebaseFirestore db;
-    pri
+    private ProgressDialog pd;
+
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         binding = FragmentTransactionBinding.inflate(inflater, container, false);
 
+        getTransaction();
+
         return binding.getRoot();
     }
 
     private void getTransaction() {
-        CollectionReference ref = db.collection("transaction");
+        CollectionReference ref = db.collection("transactions");
 
         ref.get()
                 .addOnCompleteListener(task -> {
