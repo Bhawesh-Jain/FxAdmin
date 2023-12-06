@@ -40,6 +40,8 @@ public class TransactionFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         binding = FragmentTransactionBinding.inflate(inflater, container, false);
+        db = FirebaseFirestore.getInstance();
+        pd = new ProgressDialog(getContext());
 
         getTransaction();
 
