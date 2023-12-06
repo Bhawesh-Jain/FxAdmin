@@ -21,6 +21,7 @@ public class ProfileFragment extends Fragment {
         binding = FragmentProfileBinding.inflate(inflater, container, false);
 
         binding.rlAddFunds.setOnClickListener(v -> startActivity(new Intent(getContext(), PriceListActivity.class)));
+        binding.rlServices.setOnClickListener(v -> startActivity(new Intent(getContext(), ServiceActivity.class)));
 
         return binding.getRoot();
     }
