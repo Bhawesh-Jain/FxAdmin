@@ -31,14 +31,18 @@ public class UserListAdapter extends RecyclerView.Adapter<UserListAdapter.ViewHo
     private final Context context;
     private final List<UserModel> data;
     private final FirebaseFirestore db;
-    private final ProgressDialog pd;
+    private ProgressDialog pd;
 
     public UserListAdapter(Context context, List<UserModel> data) {
         this.context = context;
         this.data = data;
 
         this.db = FirebaseFirestore.getInstance();
-        this.pd = new ProgressDialog(context);
+        try {
+            pd = new ProgressDialog(context);
+        } catch (Exception e) {
+            Log.e("TAG", "TransactionAdapter: ", e);
+        }
     }
 
     @NonNull

@@ -33,7 +33,11 @@ public class PriceListAdapter extends RecyclerView.Adapter<PriceListAdapter.View
         this.data = data;
 
         db = FirebaseFirestore.getInstance();
-        pd = new ProgressDialog(context);
+        try {
+            pd = new ProgressDialog(context);
+        } catch (Exception e) {
+            Log.e("TAG", "TransactionAdapter: ", e);
+        }
     }
 
     @NonNull

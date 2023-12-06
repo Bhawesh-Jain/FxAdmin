@@ -25,15 +25,18 @@ public class ServiceListAdapter extends RecyclerView.Adapter<ServiceListAdapter.
     private final Context context;
     private final List<ServiceModel> data;
     private final FirebaseFirestore db;
-    private final ProgressDialog pd;
+    private ProgressDialog pd;
 
     public ServiceListAdapter(Context context, List<ServiceModel> data) {
         this.context = context;
         this.data = data;
 
         db = FirebaseFirestore.getInstance();
-        pd = new ProgressDialog(context);
-    }
+        try {
+            pd = new ProgressDialog(context);
+        } catch (Exception e) {
+            Log.e("TAG", "TransactionAdapter: ", e);
+        }    }
 
     @NonNull
     @Override

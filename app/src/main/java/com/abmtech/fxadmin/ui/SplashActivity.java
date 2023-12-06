@@ -11,6 +11,7 @@ import android.util.Log;
 import android.widget.Toast;
 
 import com.abmtech.fxadmin.databinding.ActivitySplashBinding;
+import com.abmtech.fxadmin.util.Session;
 import com.google.firebase.auth.FirebaseAuth;
 
 public class SplashActivity extends AppCompatActivity {
@@ -31,6 +32,7 @@ public class SplashActivity extends AppCompatActivity {
     }
 
     private void init(int count) {
+        Session session = new Session(this);
         if (count > 10) {
             Toast.makeText(this, "Something went wrong! Please check internet connection and try again!", Toast.LENGTH_SHORT).show();
         } else
@@ -40,7 +42,10 @@ public class SplashActivity extends AppCompatActivity {
                             init(count + 1);
                         } else {
                             new Handler().postDelayed(() -> {
-                                startActivity(new Intent(SplashActivity.this, DashboardActivity.class));
+                                if (session.isLoggedIn())
+                                    startActivity(new Intent(SplashActivity.this, DashboardActivity.class));
+                                else
+                                    startActivity(new Intent(SplashActivity.this, LoginActivity.class));
                                 finish();
                             }, SPLASH_TIMER);
                             Log.d(TAG, "onComplete() called with: task = [" + task + "]");
