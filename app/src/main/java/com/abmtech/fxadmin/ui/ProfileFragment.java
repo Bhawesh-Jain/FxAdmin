@@ -26,6 +26,7 @@ public class ProfileFragment extends Fragment {
         binding.rlServices.setOnClickListener(v -> startActivity(new Intent(getContext(), ServiceActivity.class)));
         binding.rlAboutUs.setOnClickListener(v -> startActivity(new Intent(getContext(), AboutUsActivity.class)));
         binding.rlContactUs.setOnClickListener(v -> startActivity(new Intent(getContext(), ContactUsActivity.class)));
+        binding.rlAllOrder.setOnClickListener(v -> startActivity(new Intent(getContext(), AllOrderActivity.class)));
         binding.rlLogout.setOnClickListener(v -> session.logout());
 
         return binding.getRoot();

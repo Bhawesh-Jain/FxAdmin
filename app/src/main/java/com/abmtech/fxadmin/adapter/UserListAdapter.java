@@ -17,6 +17,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.abmtech.fxadmin.databinding.DialogLoanLayBinding;
 import com.abmtech.fxadmin.databinding.ItemUserLayBinding;
 import com.abmtech.fxadmin.model.UserModel;
+import com.abmtech.fxadmin.ui.InvestmentManagementActivity;
 import com.abmtech.fxadmin.ui.UserDetailActivity;
 import com.abmtech.fxadmin.util.ProgressDialog;
 import com.google.android.material.bottomsheet.BottomSheetDialog;
@@ -62,6 +63,7 @@ public class UserListAdapter extends RecyclerView.Adapter<UserListAdapter.ViewHo
         holder.binding.cardDel.setOnClickListener(v -> deleteUser(current, position));
         holder.binding.cardLoan.setOnClickListener(v -> addFunds(current));
         holder.binding.cardView.setOnClickListener(v -> context.startActivity(new Intent(context, UserDetailActivity.class).putExtra("model", current)));
+        holder.binding.getRoot().setOnClickListener(v -> context.startActivity(new Intent(context, InvestmentManagementActivity.class).putExtra("model", current)));
     }
 
     private void deleteUser(UserModel current, int position) {

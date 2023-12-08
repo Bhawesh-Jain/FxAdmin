@@ -26,6 +26,8 @@ public class DashboardActivity extends AppCompatActivity {
                 changeFragment(new HomeFragment());
             } else if (item.getItemId() == R.id.nav_profile) {
                 changeFragment(new ProfileFragment());
+            } else if (item.getItemId() == R.id.nav_withdraw) {
+                changeFragment(new WithdrawFragment());
             } else if (item.getItemId() == R.id.nav_transaction) {
                 changeFragment(new TransactionFragment());
             }

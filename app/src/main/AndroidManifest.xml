@@ -13,6 +13,12 @@
         android:theme="@style/Theme.FxAdmin"
         tools:targetApi="31">
         <activity
+            android:name=".ui.AllOrderActivity"
+            android:exported="false" />
+        <activity
+            android:name=".ui.InvestmentManagementActivity"
+            android:exported="false" />
+        <activity
             android:name=".ui.LoginActivity"
             android:exported="false" />
         <activity

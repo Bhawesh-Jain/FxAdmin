@@ -1,6 +1,7 @@
 package com.abmtech.fxadmin.adapter;
 
 import static android.content.ContentValues.TAG;
+import static com.abmtech.fxadmin.util.Constants.getCurrentTimeStamp;
 
 import android.content.Context;
 import android.util.Log;
@@ -12,10 +13,9 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.abmtech.fxadmin.R;
-import com.abmtech.fxadmin.databinding.ItemTransactionListBinding;
-import com.abmtech.fxadmin.model.TransactionModel;
+import com.abmtech.fxadmin.databinding.ItemWithdrawListBinding;
 import com.abmtech.fxadmin.model.UserModel;
+import com.abmtech.fxadmin.model.WithdrawModel;
 import com.abmtech.fxadmin.util.ProgressDialog;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentReference;
@@ -25,13 +25,13 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class TransactionAdapter extends RecyclerView.Adapter<TransactionAdapter.ViewHolder> {
+public class WithdrawAdapter extends RecyclerView.Adapter<WithdrawAdapter.ViewHolder> {
     private final Context context;
-    private final List<TransactionModel> data;
-    private FirebaseFirestore db;
+    private final List<WithdrawModel> data;
+    private final FirebaseFirestore db;
     private ProgressDialog pd;
 
-    public TransactionAdapter(Context context, List<TransactionModel> data) {
+    public WithdrawAdapter(Context context, List<WithdrawModel> data) {
         this.context = context;
         this.data = data;
 
@@ -46,17 +46,20 @@ public class TransactionAdapter extends RecyclerView.Adapter<TransactionAdapter.
     @NonNull
     @Override
     public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        return new ViewHolder(ItemTransactionListBinding.inflate(LayoutInflater.from(parent.getContext()), parent, false));
+        return new ViewHolder(ItemWithdrawListBinding.inflate(LayoutInflater.from(parent.getContext()), parent, false));
     }
 
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
-        TransactionModel current = data.get(position);
+        WithdrawModel current = data.get(position);
 
         holder.binding.textMode.setText(current.getType());
-        holder.binding.textName.setText(current.getMessage());
+        holder.binding.textName.setText(current.getName());
         holder.binding.textTransactionAmount.setText(String.format("Transaction Amount: %s", current.getAmount()));
-        holder.binding.textTransactionId.setText(String.format("Transaction Id: %s", current.getTransactionId()));
+        holder.binding.textAccountHolder.setText(String.format("Account Holder: %s", current.getAccHolder()));
+        holder.binding.textAccountNumber.setText(String.format("Account Number: %s", current.getAccNumber()));
+        holder.binding.textIfsc.setText(String.format("Ifsc: %s", current.getIfscCode()));
+        holder.binding.textBankName.setText(String.format("Transaction Id: %s", current.getBankName()));
         holder.binding.textTransactionStatus.setText(String.format("Status: %s", current.getStatus()));
         holder.binding.textTransactionDate.setText(String.format("Date: %s", current.getDate()));
 
@@ -64,20 +67,14 @@ public class TransactionAdapter extends RecyclerView.Adapter<TransactionAdapter.
 
         holder.binding.cardReject.setOnClickListener(v -> setStatus(current, position, "REJECTED"));
 
-        if (current.getType().equals("Paid")) {
-            holder.binding.image.setImageResource(R.drawable.ic_top_right_arrow);
-        } else {
-            holder.binding.image.setImageResource(R.drawable.ic_bottom_left_arrow);
-        }
         if (current.getStatus().equals("PENDING")) {
             holder.binding.llBtns.setVisibility(View.VISIBLE);
-
         } else {
             holder.binding.llBtns.setVisibility(View.GONE);
         }
     }
 
-    private void updateUser(TransactionModel current, int position) {
+    private void updateUser(WithdrawModel current, int position) {
         pd.show();
         CollectionReference ref = db.collection("users");
 
@@ -92,8 +89,8 @@ public class TransactionAdapter extends RecyclerView.Adapter<TransactionAdapter.
                             UserModel model = task.getResult().toObject(UserModel.class);
 
                             if (model != null) {
-                               long a = Long.parseLong(model.getInvestedAmount()) + Long.parseLong(current.getAmount());
-                               long b = Long.parseLong(model.getMarketValue()) + Long.parseLong(current.getAmount());
+                                long a = Long.parseLong(model.getInvestedAmount()) - Long.parseLong(current.getAmount());
+                                long b = Long.parseLong(model.getMarketValue()) - Long.parseLong(current.getAmount());
                                 Map<String, Object> transaction = new HashMap<>();
 
                                 transaction.put("investedAmount", String.valueOf(a));
@@ -122,21 +119,21 @@ public class TransactionAdapter extends RecyclerView.Adapter<TransactionAdapter.
     }
 
 
-
-    private void setStatus(TransactionModel current, int position, String status) {
+    private void setStatus(WithdrawModel current, int position, String status) {
         pd.show();
 
         Map<String, Object> transaction = new HashMap<>();
 
         transaction.put("status", status);
 
-        DocumentReference transactionRef = db.collection("transactions").document(current.getId());
+        DocumentReference transactionRef = db.collection("withdraw").document(current.getId());
 
         transactionRef
                 .update(transaction)
                 .addOnCompleteListener(task -> {
                     pd.dismiss();
                     if (task.isSuccessful()) {
+                        addTransaction(status, current);
                         current.setStatus(status);
                         notifyItemChanged(position);
                     } else {
@@ -144,7 +141,34 @@ public class TransactionAdapter extends RecyclerView.Adapter<TransactionAdapter.
                     }
                 })
                 .addOnFailureListener(e -> setStatus(current, position, status));
+    }
 
+    private void addTransaction(String status, WithdrawModel current) {
+        pd.show();
+
+        Map<String, Object> map = new HashMap<>();
+
+        map.put("userId", current.getUserId());
+        map.put("date", getCurrentTimeStamp());
+        map.put("amount", current.getAmount());
+        map.put("time", System.currentTimeMillis());
+        map.put("type", "Receive");
+        map.put("transactionId", "WITHDRAW");
+        map.put("message", "Withdraw request " + status + " by Admin");
+        map.put("status", status);
+
+
+        String id = db.collection("transactions").document().getId();
+
+        map.put("id", id);
+
+        DocumentReference userRef = db.collection("transactions").document(id);
+
+        userRef.set(map).addOnCompleteListener(task -> pd.dismiss())
+                .addOnFailureListener(e -> {
+                    pd.dismiss();
+                    Log.e("TAG", "onFailure: Signup", e);
+                });
     }
 
     @Override
@@ -153,8 +177,9 @@ public class TransactionAdapter extends RecyclerView.Adapter<TransactionAdapter.
     }
 
     public class ViewHolder extends RecyclerView.ViewHolder {
-        public ItemTransactionListBinding binding;
-        public ViewHolder(@NonNull ItemTransactionListBinding binding) {
+        public ItemWithdrawListBinding binding;
+
+        public ViewHolder(@NonNull ItemWithdrawListBinding binding) {
             super(binding.getRoot());
 
             this.binding = binding;

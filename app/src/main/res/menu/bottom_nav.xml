@@ -9,6 +9,10 @@
         android:title="Transactions"
         android:icon="@drawable/ic_money"/>
 
+    <item android:id="@+id/nav_withdraw"
+        android:title="Withdraw"
+        android:icon="@drawable/ic_withdraw"/>
+
     <item android:id="@+id/nav_profile"
         android:title="Settings"
         android:icon="@drawable/ic_person"/>

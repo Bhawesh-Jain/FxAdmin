@@ -6,6 +6,7 @@ public class TransactionModel {
             date,
             amount,
             type,
+            time,
             transactionId,
             message,
             status;

@@ -19,7 +19,43 @@ public class UserModel implements Serializable {
             bankName,
             accountNumber,
             accountHolder,
+            investedAmount,
+            marketValue,
+            todayLoss,
+            overallGain,
             ifscCode;
+
+    public String getInvestedAmount() {
+        return investedAmount;
+    }
+
+    public void setInvestedAmount(String investedAmount) {
+        this.investedAmount = investedAmount;
+    }
+
+    public String getMarketValue() {
+        return marketValue;
+    }
+
+    public void setMarketValue(String marketValue) {
+        this.marketValue = marketValue;
+    }
+
+    public String getTodayLoss() {
+        return todayLoss;
+    }
+
+    public void setTodayLoss(String todayLoss) {
+        this.todayLoss = todayLoss;
+    }
+
+    public String getOverallGain() {
+        return overallGain;
+    }
+
+    public void setOverallGain(String overallGain) {
+        this.overallGain = overallGain;
+    }
 
     public UserModel() {
     }
