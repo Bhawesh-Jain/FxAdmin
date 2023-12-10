@@ -13,10 +13,12 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.abmtech.fxadmin.databinding.DialogWithdrawTransactionIdLayBinding;
 import com.abmtech.fxadmin.databinding.ItemWithdrawListBinding;
 import com.abmtech.fxadmin.model.UserModel;
 import com.abmtech.fxadmin.model.WithdrawModel;
 import com.abmtech.fxadmin.util.ProgressDialog;
+import com.google.android.material.bottomsheet.BottomSheetDialog;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.FirebaseFirestore;
@@ -58,14 +60,14 @@ public class WithdrawAdapter extends RecyclerView.Adapter<WithdrawAdapter.ViewHo
         holder.binding.textTransactionAmount.setText(String.format("Transaction Amount: %s", current.getAmount()));
         holder.binding.textAccountHolder.setText(String.format("Account Holder: %s", current.getAccHolder()));
         holder.binding.textAccountNumber.setText(String.format("Account Number: %s", current.getAccNumber()));
-        holder.binding.textIfsc.setText(String.format("Ifsc: %s", current.getIfscCode()));
-        holder.binding.textBankName.setText(String.format("Transaction Id: %s", current.getBankName()));
+        holder.binding.textIfsc.setText(String.format("IFSC Code: %s", current.getIfscCode()));
+        holder.binding.textBankName.setText(String.format("Bank Name: %s", current.getBankName()));
         holder.binding.textTransactionStatus.setText(String.format("Status: %s", current.getStatus()));
         holder.binding.textTransactionDate.setText(String.format("Date: %s", current.getDate()));
 
-        holder.binding.cardComplete.setOnClickListener(v -> updateUser(current, position));
+        holder.binding.cardComplete.setOnClickListener(v -> askTransactionId(current, position));
 
-        holder.binding.cardReject.setOnClickListener(v -> setStatus(current, position, "REJECTED"));
+        holder.binding.cardReject.setOnClickListener(v -> setStatus(current, position, "REJECTED", "WITHDRAW-REJECTED"));
 
         if (current.getStatus().equals("PENDING")) {
             holder.binding.llBtns.setVisibility(View.VISIBLE);
@@ -74,7 +76,26 @@ public class WithdrawAdapter extends RecyclerView.Adapter<WithdrawAdapter.ViewHo
         }
     }
 
-    private void updateUser(WithdrawModel current, int position) {
+    private void askTransactionId(WithdrawModel current, int position) {
+        DialogWithdrawTransactionIdLayBinding bb = DialogWithdrawTransactionIdLayBinding.inflate(LayoutInflater.from(context));
+
+        BottomSheetDialog bottomSheetDialog = new BottomSheetDialog(context);
+        bottomSheetDialog.setContentView(bb.getRoot());
+
+        bb.cardSubmit.setOnClickListener(v -> {
+            if (bb.edtTransactionId.getText().toString().isEmpty()) {
+                bb.edtTransactionId.setError("Enter Transaction Id!");
+                bb.edtTransactionId.requestFocus();
+            } else {
+                updateUser(current, position, bb.edtTransactionId.getText().toString().trim());
+                bottomSheetDialog.dismiss();
+            }
+        });
+
+        bottomSheetDialog.show();
+    }
+
+    private void updateUser(WithdrawModel current, int position, String transactionId) {
         pd.show();
         CollectionReference ref = db.collection("users");
 
@@ -101,7 +122,7 @@ public class WithdrawAdapter extends RecyclerView.Adapter<WithdrawAdapter.ViewHo
                                         .addOnCompleteListener(task1 -> {
                                             pd.dismiss();
                                             if (task1.isSuccessful()) {
-                                                setStatus(current, position, "COMPLETE");
+                                                setStatus(current, position, "COMPLETE", transactionId);
                                             } else {
                                                 Log.e("TransactionStatus", "Error adding document", task1.getException());
                                             }
@@ -119,7 +140,7 @@ public class WithdrawAdapter extends RecyclerView.Adapter<WithdrawAdapter.ViewHo
     }
 
 
-    private void setStatus(WithdrawModel current, int position, String status) {
+    private void setStatus(WithdrawModel current, int position, String status, String transactionId) {
         pd.show();
 
         Map<String, Object> transaction = new HashMap<>();
@@ -133,17 +154,17 @@ public class WithdrawAdapter extends RecyclerView.Adapter<WithdrawAdapter.ViewHo
                 .addOnCompleteListener(task -> {
                     pd.dismiss();
                     if (task.isSuccessful()) {
-                        addTransaction(status, current);
+                        addTransaction(status, current, transactionId);
                         current.setStatus(status);
                         notifyItemChanged(position);
                     } else {
                         Log.e("TransactionStatus", "Error adding document", task.getException());
                     }
                 })
-                .addOnFailureListener(e -> setStatus(current, position, status));
+                .addOnFailureListener(e -> setStatus(current, position, status, transactionId));
     }
 
-    private void addTransaction(String status, WithdrawModel current) {
+    private void addTransaction(String status, WithdrawModel current, String transactionId) {
         pd.show();
 
         Map<String, Object> map = new HashMap<>();
@@ -153,7 +174,7 @@ public class WithdrawAdapter extends RecyclerView.Adapter<WithdrawAdapter.ViewHo
         map.put("amount", current.getAmount());
         map.put("time", System.currentTimeMillis());
         map.put("type", "Receive");
-        map.put("transactionId", "WITHDRAW");
+        map.put("transactionId", transactionId);
         map.put("message", "Withdraw request " + status + " by Admin");
         map.put("status", status);
 
@@ -176,7 +197,7 @@ public class WithdrawAdapter extends RecyclerView.Adapter<WithdrawAdapter.ViewHo
         return data.size();
     }
 
-    public class ViewHolder extends RecyclerView.ViewHolder {
+    public static class ViewHolder extends RecyclerView.ViewHolder {
         public ItemWithdrawListBinding binding;
 
         public ViewHolder(@NonNull ItemWithdrawListBinding binding) {
