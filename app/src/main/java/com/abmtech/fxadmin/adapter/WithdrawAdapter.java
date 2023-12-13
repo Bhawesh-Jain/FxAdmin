@@ -172,7 +172,7 @@ public class WithdrawAdapter extends RecyclerView.Adapter<WithdrawAdapter.ViewHo
         map.put("userId", current.getUserId());
         map.put("date", getCurrentTimeStamp());
         map.put("amount", current.getAmount());
-        map.put("time", System.currentTimeMillis());
+        map.put("time", String.valueOf(System.currentTimeMillis()));
         map.put("type", "Receive");
         map.put("transactionId", transactionId);
         map.put("message", "Withdraw request " + status + " by Admin");

@@ -45,7 +45,7 @@ public class WithdrawFragment extends Fragment {
     }
 
     private void getTransaction() {
-        Query query = db.collection("withdraw").orderBy("time", Query.Direction.ASCENDING);
+        Query query = db.collection("withdraw").orderBy("time", Query.Direction.DESCENDING);
         query.get()
                 .addOnCompleteListener(task -> {
                     if (task.isSuccessful()) {
