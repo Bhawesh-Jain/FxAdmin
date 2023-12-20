@@ -12,6 +12,7 @@ import com.abmtech.fxadmin.R;
 import com.abmtech.fxadmin.databinding.ActivityAllOrderBinding;
 import com.abmtech.fxadmin.model.AllOrderModel;
 import com.abmtech.fxadmin.model.ServiceModel;
+import com.abmtech.fxadmin.model.UserModel;
 import com.abmtech.fxadmin.util.ProgressDialog;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentReference;
@@ -24,6 +25,7 @@ public class AllOrderActivity extends AppCompatActivity {
     private ActivityAllOrderBinding binding;
     private FirebaseFirestore db;
     private ProgressDialog pd;
+    private UserModel model;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -32,6 +34,8 @@ public class AllOrderActivity extends AppCompatActivity {
         setContentView(binding.getRoot());
         db = FirebaseFirestore.getInstance();
         pd = new ProgressDialog(this);
+
+        model = (UserModel) getIntent().getSerializableExtra("model");
 
         getAboutUs();
 
@@ -60,7 +64,7 @@ public class AllOrderActivity extends AppCompatActivity {
         map.put("liveCurrencyName", binding.edtCurrencyName.getText().toString().trim());
         map.put("closeCurrencyName", binding.edtCCurrencyName.getText().toString().trim());
 
-        DocumentReference transactionRef = db.collection("all_order").document("all_order");
+        DocumentReference transactionRef = db.collection("user_orders").document(model.getId());
 
         transactionRef
                 .set(map)
@@ -79,9 +83,9 @@ public class AllOrderActivity extends AppCompatActivity {
 
     private void getAboutUs() {
         pd.show();
-        CollectionReference ref = db.collection("about_us");
+        CollectionReference ref = db.collection("user_orders");
 
-        ref.document("about")
+        ref.document(model.getId())
                 .get()
                 .addOnCompleteListener(task -> {
                     if (task.isSuccessful()) {
@@ -105,9 +109,7 @@ public class AllOrderActivity extends AppCompatActivity {
 
                                 binding.edtLiveDate.setText(model.getLiveDate());
                                 binding.edtCloseDate.setText(model.getCloseDate());
-
                             }
-
                         } else {
                             Toast.makeText(this, "No Text found!", Toast.LENGTH_SHORT).show();
                         }

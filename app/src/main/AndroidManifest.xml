@@ -13,6 +13,9 @@
         android:theme="@style/Theme.FxAdmin"
         tools:targetApi="31">
         <activity
+            android:name=".ui.ManageTransactionActivity"
+            android:exported="false" />
+        <activity
             android:name=".ui.AllOrderActivity"
             android:exported="false" />
         <activity
