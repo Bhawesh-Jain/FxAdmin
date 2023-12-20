@@ -66,6 +66,9 @@ public class LoginActivity extends AppCompatActivity {
                             List<UserModel> data = task.getResult().toObjects(UserModel.class);
 
                             if (data.size() > 0) {
+                                session.setUserId(value);
+                                session.setMobile(binding.edtPassword.getText().toString().trim());
+
                                 UserModel model = data.get(0);
 
                                 session.setLogin(true);
